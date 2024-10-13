@@ -1,0 +1,14 @@
+.app-icon-button {
+	background: none;
+	padding: 7px;
+	border: 0;
+	cursor: pointer;
+}
+  
+.app-icon-button .app-icon {
+	width: 28px;
+}
+
+.app-title {
+	padding-left: 8px;
+}
