@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
 import * as L from 'leaflet';
 
 @Component({
@@ -11,10 +11,11 @@ import * as L from 'leaflet';
 export class MapComponent implements AfterViewInit {
 	private map?: L.Map;
 
-	constructor() { }
+	constructor(private cd: ChangeDetectorRef) { }
 
 	ngAfterViewInit(): void {
 		this.initMap();
+		this.cd.detectChanges();
 	}
 
 	private initMap(): void {
