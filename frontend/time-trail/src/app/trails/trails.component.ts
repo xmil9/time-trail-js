@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
-import { Trail } from '../trail-types';
 import { TrailsService } from '../trails.service';
+import { Trail } from '../trail';
 
 @Component({
 	selector: 'app-trails',

@@ -22,4 +22,16 @@ export function makeUrl(...pieces: string[]): string {
 // Returns random integer [0, max).
 export function randomInt(max: number) {
 	return Math.floor(Math.random() * max);
-  }
+}
+
+export function compare(a: number, b: number): number {
+	if (a < b)
+		return -1;
+	if (a === b)
+		return 0;
+	return 1;
+}
+
+export function zeroPad(n: number, maxLen: number): string {
+	return n.toFixed().padStart(maxLen, '0');
+}

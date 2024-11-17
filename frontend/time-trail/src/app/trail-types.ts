@@ -1,6 +1,3 @@
-export type TrailId = number;
 
-export interface Trail {
-	id: TrailId;
-	name: string;
-};
+export type EventId = number;
+export type TrailId = number;
