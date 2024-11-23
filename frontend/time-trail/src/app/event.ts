@@ -1,7 +1,16 @@
 import { Date } from "./date";
-import { TrailId } from "./trail-types";
+import { EventId, TrailId } from "./trail-types";
 
-export type EventId = number;
+export interface EventData {
+	id: EventId;
+	label: string;
+	lat: number;
+	lng: number;
+	start: Date;
+	trailId: TrailId;
+	order: number;
+	end?: Date;
+}
 
 export class Event {
 

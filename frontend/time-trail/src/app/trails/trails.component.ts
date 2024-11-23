@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { TrailsService } from '../trails.service';
 import { Trail } from '../trail';
@@ -11,16 +11,15 @@ import { Trail } from '../trail';
 	styleUrl: './trails.component.css'
 })
 export class TrailsComponent {
+	private trailsService = inject(TrailsService);
 	readonly columns: string[] = ['id', 'name'];
 	trails: Trail[] = [];
 
-	constructor(private trailsService: TrailsService) { }
-
 	ngOnInit() {
-		this.updateWords();
+		this.updateTrails();
 	}
 
-	updateWords() {
+	updateTrails() {
 		this.trailsService.getTrails().subscribe((trails: Trail[]) => {
 			this.trails = trails;
 		});

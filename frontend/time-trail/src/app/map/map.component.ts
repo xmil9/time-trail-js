@@ -1,5 +1,10 @@
-import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, inject } from '@angular/core';
 import * as L from 'leaflet';
+import { TrailsService } from '../trails.service';
+import { Trail } from '../trail';
+import { MappingService } from '../mapping.service';
+import { filter, take } from 'rxjs';
+import { generateColors } from '../color';
 
 @Component({
 	selector: 'app-map',
@@ -9,12 +14,15 @@ import * as L from 'leaflet';
 	styleUrl: './map.component.css'
 })
 export class MapComponent implements AfterViewInit {
+	private trailsService = inject(TrailsService);
+	private mappingService?: MappingService;
 	private map?: L.Map;
 
 	constructor(private cd: ChangeDetectorRef) { }
 
 	ngAfterViewInit(): void {
 		this.initMap();
+		this.initTrails();
 		this.cd.detectChanges();
 	}
 
@@ -31,5 +39,26 @@ export class MapComponent implements AfterViewInit {
 		});
 
 		tiles.addTo(this.map);
+	}
+
+	private initTrails() {
+		if (!this.map)
+			throw new Error('Map not initialized.');
+		
+		this.mappingService = new MappingService(this.map);
+		this.trailsService.getTrails().pipe(take(1)).subscribe(trails =>{
+			this.applyTrails(trails);
+		});
+	}
+
+	private applyTrails(trails: Trail[]) {
+		if (!this.mappingService)
+			throw new Error('Mapping service not initialized.');
+
+		const colors = generateColors(trails.length);
+
+		trails.forEach((trail, trailIdx) => {
+			this.mappingService?.addTrail(trail, colors[trailIdx++], 10);
+		});
 	}
 }
