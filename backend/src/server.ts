@@ -40,8 +40,8 @@ app.get('/api/events', (req: Request, res: Response<Event[] | Error>) => {
 	});
 });
 
-app.get('/api/trail/:trailId', (req: Request, res: Response<Event[] | Error>) => {
-	db.all(`SELECT * FROM trails JOIN events ON trails.id = events.trailId WHERE trails.id = ? ORDER BY 'order'`,
+app.get('/api/trail-events/:trailId', (req: Request, res: Response<Event[] | Error>) => {
+	db.all(`SELECT * FROM events WHERE events.trailId = ? ORDER BY 'order'`,
 		[req.params.trailId],
 		(err, result: any) => {
 			if (err) {
