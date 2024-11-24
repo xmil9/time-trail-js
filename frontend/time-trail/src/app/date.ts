@@ -115,7 +115,7 @@ export class Date {
 	}
 
 	static fromIso8601String(str?: string): Date | undefined {
-		if (str === undefined)
+		if (!str)
 			return undefined;
 		return Date.fromStringWithSeparator(str, Date.iso8601Separator);
 	}

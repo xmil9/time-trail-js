@@ -6,10 +6,10 @@ export interface EventData {
 	label: string;
 	lat: number;
 	lng: number;
-	start: Date;
+	start: string;
 	trailId: TrailId;
 	order: number;
-	end?: Date;
+	end?: string;
 }
 
 export class Event {

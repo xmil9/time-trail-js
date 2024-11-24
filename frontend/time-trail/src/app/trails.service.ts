@@ -5,6 +5,7 @@ import { makeUrl } from './util';
 import { Trail, TrailData } from './trail';
 import { TrailId } from './trail-types';
 import { Event, EventData } from './event';
+import { Date } from './date';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class TrailsService {
 	}
 
 	getEvents(trailId: TrailId): Observable<Event[]> {
-		return this.http.get<EventData[]>(makeUrl(this.apiUrl, 'trail', `${trailId}`)).pipe(
+		return this.http.get<EventData[]>(makeUrl(this.apiUrl, 'trail-events', `${trailId}`)).pipe(
 			// Break array into individual events.
 			mergeMap(events => from(events)),
 			// Create event objects from pure data.
@@ -39,13 +40,24 @@ export class TrailsService {
 				eventData.label,
 				eventData.lat,
 				eventData.lng,
-				eventData.start,
+				TrailsService.makeRequiredDate(eventData.start),
 				eventData.trailId,
 				eventData.order,
-				eventData.end
-			)),
+				TrailsService.makeOptionalDate(eventData.end))
+			),
 			// Combine back into array.
 			toArray()
 		);
+	}
+
+	private static makeRequiredDate(dateStr?: string): Date {
+		const date = Date.fromIso8601String(dateStr);
+		if (!date)
+			throw new Error('Missing required date.');
+		return date;
+	}
+
+	private static makeOptionalDate(dateStr?: string): Date | undefined {
+		return Date.fromIso8601String(dateStr);
 	}
 }

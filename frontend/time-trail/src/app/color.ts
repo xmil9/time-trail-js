@@ -1,4 +1,5 @@
 export class Hsl {
+	private static readonly MaxHue = 360;
 
 	constructor(
 		// Hue
@@ -10,7 +11,7 @@ export class Hsl {
 		// Alpha
 		public a = 1
 	) {
-		if (h < 0 || h > 360)
+		if (h < 0 || h > Hsl.MaxHue)
 			throw new Error('HSL hue must be in range [0..360].');
 		if (s < 0 || s > 1)
 			throw new Error('HSL saturation must be in range [0..1].');
@@ -21,17 +22,18 @@ export class Hsl {
 	}
 
 	toRgb(): Rgba {
-		let r, g, b;
+		const normedHue = this.h / Hsl.MaxHue;
 
+		let r, g, b;
 		if (this.s === 0) {
 			// Achromatic
 			r = g = b = this.l;
 		} else {
 			const q = this.l < 0.5 ? this.l * (1 + this.s) : this.l + this.s - this.l * this.s;
 			const p = 2 * this.l - q;
-			r = Hsl.hueToRgb(p, q, this.h + 1 / 3);
-			g = Hsl.hueToRgb(p, q, this.h);
-			b = Hsl.hueToRgb(p, q, this.h - 1 / 3);
+			r = Hsl.hueToRgb(p, q, normedHue + 1 / 3);
+			g = Hsl.hueToRgb(p, q, normedHue);
+			b = Hsl.hueToRgb(p, q, normedHue - 1 / 3);
 		}
 
 		return new Rgba(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), this.a);

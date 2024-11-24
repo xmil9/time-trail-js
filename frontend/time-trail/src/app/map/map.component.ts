@@ -47,18 +47,13 @@ export class MapComponent implements AfterViewInit {
 		
 		this.mappingService = new MappingService(this.map);
 		this.trailsService.getTrails().pipe(take(1)).subscribe(trails =>{
-			this.applyTrails(trails);
+			this.addTrails(trails);
 		});
 	}
 
-	private applyTrails(trails: Trail[]) {
+	private addTrails(trails: Trail[]) {
 		if (!this.mappingService)
 			throw new Error('Mapping service not initialized.');
-
-		const colors = generateColors(trails.length);
-
-		trails.forEach((trail, trailIdx) => {
-			this.mappingService?.addTrail(trail, colors[trailIdx++], 10);
-		});
+		this.mappingService.addTrails(trails);
 	}
 }
