@@ -31,7 +31,7 @@ app.get('/api/trails', (req: Request, res: Response<Trail[] | Error>) => {
 });
 
 app.get('/api/events', (req: Request, res: Response<Event[] | Error>) => {
-	db.all(`SELECT * FROM events`, (err, result: any) => {
+	db.all('SELECT * FROM events', (err, result: any) => {
 		if (err) {
 			res.status(500).json({ error: err.message });
 			return;
@@ -41,7 +41,7 @@ app.get('/api/events', (req: Request, res: Response<Event[] | Error>) => {
 });
 
 app.get('/api/trail-events/:trailId', (req: Request, res: Response<Event[] | Error>) => {
-	db.all(`SELECT * FROM events WHERE events.trailId = ? ORDER BY 'order'`,
+	db.all('SELECT * FROM events WHERE events.trailId = ? ORDER BY `order`',
 		[req.params.trailId],
 		(err, result: any) => {
 			if (err) {
