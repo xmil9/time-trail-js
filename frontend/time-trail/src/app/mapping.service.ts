@@ -22,9 +22,23 @@ export class MappingService {
 	addTrail(trail: Trail, color: Hsl, dotScale: number) {
 		const eventColors = MappingService.generateEventColors(color, trail.events.length)
 
+		this.addPath(trail, color);
+
 		trail.events.forEach((event, idx) => {
 			this.addEvent(event, eventColors[idx], dotScale);
 		});
+	}
+
+	addPath(trail: Trail, color: Hsl) {
+		const path = L.polyline(
+			trail.events.map((event) => [event.lat, event.lng]),
+			{
+				stroke: true,
+				weight: 2,
+				color: color.toRgb().toString()
+			}
+		);
+		path.addTo(this.map);
 	}
 
 	addEvent(event: Event, color: Hsl, scale: number) {
