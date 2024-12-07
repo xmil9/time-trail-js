@@ -3,8 +3,7 @@ import * as L from 'leaflet';
 import { TrailsService } from '../trails.service';
 import { Trail } from '../trail';
 import { MappingService } from '../mapping.service';
-import { filter, take } from 'rxjs';
-import { generateColors } from '../color';
+import { take } from 'rxjs';
 
 @Component({
 	selector: 'app-map',
@@ -14,14 +13,16 @@ import { generateColors } from '../color';
 	styleUrl: './map.component.css'
 })
 export class MapComponent implements AfterViewInit {
+	private cd = inject(ChangeDetectorRef);
 	private trailsService = inject(TrailsService);
-	private mappingService?: MappingService;
+	private mappingService = inject(MappingService);
 	private map?: L.Map;
 
-	constructor(private cd: ChangeDetectorRef) { }
+	constructor() { }
 
 	ngAfterViewInit(): void {
 		this.initMap();
+		this.mappingService.setMap(this.map!);
 		this.initTrails();
 		this.cd.detectChanges();
 	}
@@ -45,7 +46,6 @@ export class MapComponent implements AfterViewInit {
 		if (!this.map)
 			throw new Error('Map not initialized.');
 		
-		this.mappingService = new MappingService(this.map);
 		this.trailsService.getTrails().pipe(take(1)).subscribe(trails =>{
 			this.addTrails(trails);
 		});

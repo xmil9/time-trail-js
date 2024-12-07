@@ -26,9 +26,9 @@ export class Event {
 	){}
 
 	get description(): string {
-		let descr = `${this.label}<br>${this.start}`;
+		let descr = `${ this.label }<br>${ this.start }`;
 		if (this.end)
-			descr += this.end.toString();
+			descr += ' - ' + this.end.toString();
 		return descr;
 
 	}

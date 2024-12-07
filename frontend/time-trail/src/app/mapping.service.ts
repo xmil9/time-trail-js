@@ -1,17 +1,27 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import { Trail } from './trail';
 import { generateColors, generateHslHues, Hsl } from './color';
 import { Event } from './event';
+import { HtmlFormatterService } from './html-formatter.service';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class MappingService {
+	private formatter = inject(HtmlFormatterService);
+	private map?: L.Map;
+	
+	constructor() { }
 
-	constructor(private map: L.Map) { }
+	setMap(map: L.Map) {
+		this.map = map;
+	}
 
 	addTrails(trails: Trail[]) {
+		if (!this.map)
+			throw new Error('Map not initialized.');
+
 		const trailColors = MappingService.generateTrailColors(trails.length);
 
 		trails.forEach((trail, idx) => {
@@ -19,17 +29,23 @@ export class MappingService {
 		});
 	}
 
-	addTrail(trail: Trail, color: Hsl, dotScale: number) {
+	private addTrail(trail: Trail, color: Hsl, dotScale: number) {
+		if (!this.map)
+			throw new Error('Map not initialized.');
+
 		const eventColors = MappingService.generateEventColors(color, trail.events.length)
 
 		this.addPath(trail, color);
 
 		trail.events.forEach((event, idx) => {
-			this.addEvent(event, eventColors[idx], dotScale);
+			this.addEvent(trail, event, eventColors[idx], dotScale);
 		});
 	}
 
-	addPath(trail: Trail, color: Hsl) {
+	private addPath(trail: Trail, color: Hsl) {
+		if (!this.map)
+			throw new Error('Map not initialized.');
+
 		const path = L.polyline(
 			trail.events.map((event) => [event.lat, event.lng]),
 			{
@@ -38,14 +54,19 @@ export class MappingService {
 				color: color.toRgb().toString()
 			}
 		);
+		path.bindTooltip(this.formatter.formatTrailContent(trail), { sticky: true });
 		path.addTo(this.map);
 	}
 
-	addEvent(event: Event, color: Hsl, scale: number) {
+	private addEvent(trail: Trail, event: Event, color: Hsl, scale: number) {
+		if (!this.map)
+			throw new Error('Map not initialized.');
+
 		const marker = L.circle([event.lat, event.lng], {
 			color: color.toRgb().toString(),
 			radius: MappingService.eventSizeInMeters(event.durationInDays()) * scale
 		});
+		marker.bindPopup(this.formatter.formatEventContent(trail, event));
 		marker.addTo(this.map);
 	}
 
