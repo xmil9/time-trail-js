@@ -1,8 +1,8 @@
 import { Date } from "./date";
-import { EventId, TrailId } from "./trail-types";
+import { TrailEventId, TrailId } from "./trail-types";
 
-export interface EventData {
-	id: EventId;
+export interface TrailEventData {
+	id: TrailEventId;
 	label: string;
 	lat: number;
 	lng: number;
@@ -12,10 +12,10 @@ export interface EventData {
 	end?: string;
 }
 
-export class Event {
+export class TrailEvent {
 
 	constructor(
-		public id: EventId,
+		public id: TrailEventId,
 		public label: string,
 		public lat: number,
 		public lng: number,
@@ -43,7 +43,7 @@ export class Event {
         return deltaYears * 365.25 + deltaMonths * 30.437 + deltaDays
     }
 
-	static compareByStartDate(a: Event, b: Event): number {
+	static compareByStartDate(a: TrailEvent, b: TrailEvent): number {
 		return Date.compare(a.start, b.start);
 	}
 };

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import { Trail } from './trail';
 import { generateColors, generateHslHues, Hsl } from './color';
-import { Event } from './event';
+import { TrailEvent } from './trail-event';
 import { HtmlFormatterService } from './html-formatter.service';
 
 @Injectable({
@@ -58,7 +58,7 @@ export class MappingService {
 		path.addTo(this.map);
 	}
 
-	private addEvent(trail: Trail, event: Event, color: Hsl, scale: number) {
+	private addEvent(trail: Trail, event: TrailEvent, color: Hsl, scale: number) {
 		if (!this.map)
 			throw new Error('Map not initialized.');
 

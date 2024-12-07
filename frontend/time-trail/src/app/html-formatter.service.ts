@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Event } from './event';
+import { TrailEvent } from './trail-event';
 import { Trail } from './trail';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class HtmlFormatterService {
 	return `<div>${ trail.name }</div>`;
   }
 
-  formatEventContent(trail: Trail, trailEvent: Event): string {
+  formatEventContent(trail: Trail, trailEvent: TrailEvent): string {
 	return `` +
 		`<div><b>${ trail.name }</b></div>` +
 		`<br>` +

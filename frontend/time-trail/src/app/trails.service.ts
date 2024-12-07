@@ -4,7 +4,7 @@ import { from, map, mergeMap, Observable, tap, toArray } from 'rxjs';
 import { makeUrl } from './util';
 import { Trail, TrailData } from './trail';
 import { TrailId } from './trail-types';
-import { Event, EventData } from './event';
+import { TrailEvent, TrailEventData } from './trail-event';
 import { Date } from './date';
 
 @Injectable({
@@ -30,12 +30,12 @@ export class TrailsService {
 		);
 	}
 
-	getEvents(trailId: TrailId): Observable<Event[]> {
-		return this.http.get<EventData[]>(makeUrl(this.apiUrl, 'trail-events', `${trailId}`)).pipe(
+	getEvents(trailId: TrailId): Observable<TrailEvent[]> {
+		return this.http.get<TrailEventData[]>(makeUrl(this.apiUrl, 'trail-events', `${trailId}`)).pipe(
 			// Break array into individual events.
 			mergeMap(events => from(events)),
 			// Create event objects from pure data.
-			map(eventData => new Event(
+			map(eventData => new TrailEvent(
 				eventData.id,
 				eventData.label,
 				eventData.lat,

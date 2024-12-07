@@ -1,4 +1,4 @@
-import { Event } from "./event";
+import { TrailEvent } from "./trail-event";
 import { TrailId } from "./trail-types";
 
 export interface TrailData {
@@ -7,24 +7,24 @@ export interface TrailData {
 }
 
 export class Trail implements TrailData {
-	public events = new Array<Event>();
+	public events = new Array<TrailEvent>();
 
 	constructor(
 		public id: TrailId,
 		public name: string
 	) {}
 
-	addEvent(e: Event): Trail {
+	addEvent(e: TrailEvent): Trail {
 		this.events.push(e);
 		return this;
 	}
 
-	addEvents(es: Event[]): Trail {
+	addEvents(es: TrailEvent[]): Trail {
 		this.events.push(...es);
 		return this;
 	}
 
 	sortEvents() {
-		this.events.sort(Event.compareByStartDate);
+		this.events.sort(TrailEvent.compareByStartDate);
 	}
 };
