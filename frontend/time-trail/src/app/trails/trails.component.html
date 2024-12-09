@@ -1,4 +1,4 @@
-<div class="trais">
+<div class="trails">
 	<p>Trails</p>
 
 	<table mat-table [dataSource]="trails" class="mat-elevation-z8 trails-table">
@@ -14,7 +14,7 @@
 		</ng-container>
 
 		<tr mat-header-row *matHeaderRowDef="columns"></tr>
-		<tr mat-row *matRowDef="let row; columns: columns;"></tr>
+		<tr mat-row *matRowDef="let trail; columns: columns;" (click)="onTrailClicked(trail)"></tr>
 
 	</table>
 </div>

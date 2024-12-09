@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { TrailsService } from '../trails.service';
 import { Trail } from '../trail';
+import { first } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-trails',
@@ -11,6 +13,7 @@ import { Trail } from '../trail';
 	styleUrl: './trails.component.css'
 })
 export class TrailsComponent {
+	private router = inject(Router);
 	private trailsService = inject(TrailsService);
 	readonly columns: string[] = ['id', 'name'];
 	trails: Trail[] = [];
@@ -20,8 +23,14 @@ export class TrailsComponent {
 	}
 
 	updateTrails() {
-		this.trailsService.getTrails().subscribe((trails: Trail[]) => {
-			this.trails = trails;
-		});
+		this.trailsService.getTrails()
+			.pipe(first())
+			.subscribe((trails: Trail[]) => {
+				this.trails = trails;
+			});
+	}
+
+	onTrailClicked(trail: Trail) {
+		this.router.navigate(['/trail-events', trail.id]);
 	}
 }

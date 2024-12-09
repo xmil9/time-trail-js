@@ -1,0 +1,40 @@
+<div class="trails">
+	<p>Trail Events</p>
+
+	<table mat-table [dataSource]="trailEvents" class="mat-elevation-z8 trails-table">
+
+		<ng-container matColumnDef="id">
+			<th mat-header-cell *matHeaderCellDef> Id </th>
+			<td mat-cell *matCellDef="let trailEvent"> {{trailEvent.id}} </td>
+		</ng-container>
+
+		<ng-container matColumnDef="label">
+			<th mat-header-cell *matHeaderCellDef> Label </th>
+			<td mat-cell *matCellDef="let trailEvent"> {{trailEvent.label}} </td>
+		</ng-container>
+
+		<ng-container matColumnDef="lat">
+			<th mat-header-cell *matHeaderCellDef> Latitude </th>
+			<td mat-cell *matCellDef="let trailEvent"> {{trailEvent.lat}} </td>
+		</ng-container>
+
+		<ng-container matColumnDef="lng">
+			<th mat-header-cell *matHeaderCellDef> Longitude </th>
+			<td mat-cell *matCellDef="let trailEvent"> {{trailEvent.lng}} </td>
+		</ng-container>
+
+		<ng-container matColumnDef="start">
+			<th mat-header-cell *matHeaderCellDef> From </th>
+			<td mat-cell *matCellDef="let trailEvent"> {{trailEvent.start}} </td>
+		</ng-container>
+
+		<ng-container matColumnDef="end">
+			<th mat-header-cell *matHeaderCellDef> To </th>
+			<td mat-cell *matCellDef="let trailEvent"> {{trailEvent.end ?? ''}} </td>
+		</ng-container>
+
+		<tr mat-header-row *matHeaderRowDef="columns"></tr>
+		<tr mat-row *matRowDef="let row; columns: columns;"></tr>
+
+	</table>
+</div>
