@@ -31,6 +31,6 @@ export class TrailsComponent {
 	}
 
 	onTrailClicked(trail: Trail) {
-		this.router.navigate(['/trail-events', trail.id]);
+		this.router.navigate(['/events', trail.id]);
 	}
 }

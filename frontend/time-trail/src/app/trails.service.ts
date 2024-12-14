@@ -6,17 +6,16 @@ import { Trail, TrailData } from './trail';
 import { TrailId } from './trail-types';
 import { TrailEvent, TrailEventData } from './trail-event';
 import { Date } from './date';
+import { Endpoint, getApiUrl } from '../backend-api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TrailsService {
-	private readonly apiUrl = 'http://localhost:3000/api';
-
 	constructor(private http: HttpClient) { }
 
 	getTrails(): Observable<Trail[]> {
-		return this.http.get<TrailData[]>(makeUrl(this.apiUrl, 'trails')).pipe(
+		return this.http.get<TrailData[]>(getApiUrl(Endpoint.Trails)).pipe(
 			// Break array into individual trails.
 			mergeMap(trails => from(trails)),
 			// Create trail objects from pure data.
@@ -31,7 +30,7 @@ export class TrailsService {
 	}
 
 	getEvents(trailId: TrailId): Observable<TrailEvent[]> {
-		return this.http.get<TrailEventData[]>(makeUrl(this.apiUrl, 'trail-events', `${trailId}`)).pipe(
+		return this.http.get<TrailEventData[]>(makeUrl(getApiUrl(Endpoint.Events), `${trailId}`)).pipe(
 			// Break array into individual events.
 			mergeMap(events => from(events)),
 			// Create event objects from pure data.
