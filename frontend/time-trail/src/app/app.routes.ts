@@ -7,5 +7,5 @@ export const routes: Routes = [
 	{path: '', redirectTo: '/map', pathMatch:'full'},
 	{path: 'map', component: MapComponent},
 	{path: 'trails', component: TrailsComponent},
-	{path: 'trail-events/:trailId', component: TrailEventsComponent},
+	{path: 'events/:trailId', component: TrailEventsComponent},
 ];

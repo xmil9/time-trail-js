@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import sqlite3 from 'sqlite3';
 import cors from 'cors';
-import { Error, Trail, Event } from './types';
+import { Error, Trail, Event } from './types.js';
+import { QueryResult, TrailsDb } from './trails-db.js';
 
 const port = 3000;
 const dbPath = './assets/db/trails.db';
@@ -10,49 +10,37 @@ const app = express();
 // Disable CORS.
 app.use(cors());
 
-// Connect to SQLite database
-const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
-	if (err) {
-		console.error('Error opening database', err.message);
-	} else {
-		console.log('Connected to the SQLite database.');
-	}
-});
+const db = new TrailsDb(dbPath);
 
 // Define routes
-app.get('/api/trails', (req: Request, res: Response<Trail[] | Error>) => {
-	db.all('SELECT * FROM trails', (err, result: any) => {
-		if (err) {
-			res.status(500).json({ error: err.message });
-			return;
-		}
-		res.json(result);
-	});
+app.get('/api/trails/:trailId?', async (req: Request, resp: Response<Trail[] | Error>) => {
+	let result: QueryResult = {};
+
+	const trailId = req.params.trailId;
+	if (trailId) {
+		result = await db.getTrail(trailId);
+	} else {
+		result = await db.getTrails();
+	}
+
+	fillResponse(result, resp);
 });
 
-app.get('/api/events', (req: Request, res: Response<Event[] | Error>) => {
-	db.all('SELECT * FROM events', (err, result: any) => {
-		if (err) {
-			res.status(500).json({ error: err.message });
-			return;
-		}
-		res.json(result);
-	});
-});
-
-app.get('/api/trail-events/:trailId', (req: Request, res: Response<Event[] | Error>) => {
-	db.all('SELECT * FROM events WHERE events.trailId = ? ORDER BY `order`',
-		[req.params.trailId],
-		(err, result: any) => {
-			if (err) {
-				res.status(500).json({ error: err.message });
-				return;
-			}
-			res.json(result);
-		});
+app.get('/api/events/:trailId', async (req: Request, resp: Response<Event[] | Error>) => {
+	const trailId = req.params.trailId;
+	const result = await db.getTrailEvents(trailId);
+	fillResponse(result, resp);
 });
 
 // Start server
 app.listen(port, () => {
 	console.log(`Server running at http://localhost:${port}`);
 });
+
+function fillResponse(result: QueryResult, resp: Response<any>) {
+	if (result.err) {
+		resp.status(500).json({ error: result.err.message });
+	} else {
+		resp.json(result.rows);
+	}
+}
