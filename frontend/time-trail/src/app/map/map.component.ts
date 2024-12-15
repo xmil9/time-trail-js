@@ -30,11 +30,7 @@ export class MapComponent implements AfterViewInit {
 
 	private initTrails() {
 		this.trailsService.getTrails().pipe(take(1)).subscribe(trails =>{
-			this.addTrails(trails);
+			this.map?.addTrails(trails);
 		});
-	}
-
-	private addTrails(trails: Trail[]) {
-		this.map?.addTrails(trails);
 	}
 }
