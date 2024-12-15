@@ -28,3 +28,8 @@ export class Trail implements TrailData {
 		this.events.sort(TrailEvent.compareByStartDate);
 	}
 };
+
+export interface TrailEventPair {
+	trail: Trail;
+	event: TrailEvent;
+}

@@ -1,10 +1,12 @@
 import * as L from 'leaflet';
-import { Trail } from './trail';
+import { Trail, TrailEventPair } from './trail';
 import { generateColors, generateHslHues, Hsl } from './color';
-import { formatEventAsHtml, formatTrailAsHtml } from './html-formatter.service';
+import { formatEventAsHtml, formatEventsAsHtml, formatTrailAsHtml } from './html-formatter.service';
 import { TrailEvent } from './trail-event';
+import { TrailEventMarker } from './trail-event-marker';
 
 export class TrailsMap extends L.Map {
+	private trailEventPopup = L.popup();
 
 	constructor() {
 		super('map', {
@@ -15,6 +17,11 @@ export class TrailsMap extends L.Map {
 	}
 
 	private init() {
+		this.initTiles();
+		this.initInteractionEvents();
+	}
+
+	private initTiles() {
 		const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 18,
 			minZoom: 3,
@@ -22,6 +29,36 @@ export class TrailsMap extends L.Map {
 		});
 
 		tiles.addTo(this);
+	}
+
+	private initInteractionEvents() {
+		this.on('click', this.onMapClicked.bind(this));
+	}
+
+	private onMapClicked(e: L.LeafletMouseEvent) {
+		const clickedMarkers = this.findTrailEventMarkersAt(e.latlng);
+		
+		if (clickedMarkers.length > 0) {
+			const clickedTrailEvents = clickedMarkers.map(teMarker => <TrailEventPair>{
+				trail: teMarker.trail,
+				event: teMarker.event
+			});
+			this.showPopup(formatEventsAsHtml(clickedTrailEvents), e.latlng);
+		}
+	}
+
+	private findTrailEventMarkersAt(at: L.LatLng) {
+		const markers = new Array<TrailEventMarker>();
+
+		this.eachLayer(layer => {
+			if (layer instanceof TrailEventMarker) {
+				const marker = <TrailEventMarker>layer;
+				if (marker.getBounds().contains(at))
+					markers.push(marker);
+			}
+		});
+
+		return markers;
 	}
 
 	addTrails(trails: Trail[]) {
@@ -35,32 +72,38 @@ export class TrailsMap extends L.Map {
 	private addTrail(trail: Trail, color: Hsl, dotScale: number) {
 		const eventColors = TrailsMap.generateEventColors(color, trail.events.length)
 
-		this.addPath(trail, color);
+		this.addTrailPath(trail, color);
 
 		trail.events.forEach((event, idx) => {
-			this.addEvent(trail, event, eventColors[idx], dotScale);
+			this.addTrailEvent(trail, event, eventColors[idx], dotScale);
 		});
 	}
 
-	private addPath(trail: Trail, color: Hsl) {
+	private addTrailPath(trail: Trail, color: Hsl) {
 		const path = L.polyline(
 			trail.events.map((event) => [event.lat, event.lng]), {
-				stroke: true,
-				weight: 2,
-				color: color.toRgb().toString()
-			}
+			stroke: true,
+			weight: 2,
+			color: color.toRgb().toString()
+		}
 		);
 		path.bindTooltip(formatTrailAsHtml(trail), { sticky: true });
 		path.addTo(this);
 	}
 
-	private addEvent(trail: Trail, event: TrailEvent, color: Hsl, scale: number) {
-		const marker = L.circle([event.lat, event.lng], {
+	private addTrailEvent(trail: Trail, event: TrailEvent, color: Hsl, scale: number) {
+		const marker = new TrailEventMarker(trail, event, [event.lat, event.lng], {
 			color: color.toRgb().toString(),
 			radius: TrailsMap.eventSizeInMeters(event.durationInDays()) * scale
 		});
-		marker.bindPopup(formatEventAsHtml(trail, event));
 		marker.addTo(this);
+	}
+
+	private showPopup(content: string, at: L.LatLngExpression) {
+		this.trailEventPopup
+			.setLatLng(at)
+			.setContent(content)
+			.openOn(this);
 	}
 
 	private static generateTrailColors(numTrails: number): Array<Hsl> {

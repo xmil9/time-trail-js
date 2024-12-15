@@ -1,13 +1,32 @@
 import { TrailEvent } from './trail-event';
-import { Trail } from './trail';
+import { Trail, TrailEventPair } from './trail';
 
 export function formatTrailAsHtml(trail: Trail) {
 	return `<div>${trail.name}</div>`;
 }
 
-export function formatEventAsHtml(trail: Trail, trailEvent: TrailEvent): string {
+export interface TrailEventFormat {
+	dense: boolean;
+};
+export function formatEventAsHtml(
+	trail: Trail,
+	trailEvent: TrailEvent
+): string {
 	return `` +
-		`<div><b>${trail.name}</b></div>` +
-		`<br>` +
+		`<h4>${trail.name}</h4>` +
 		`<div>${trailEvent.description}</div>`;
+}
+
+export function formatEventsAsHtml(events: Array<TrailEventPair>): string {
+	if (!events)
+		return '';
+	if (events.length === 1)
+		return formatEventAsHtml(events[0].trail, events[0].event);
+
+	let html = `<h3>${events.length} Events</h3>`;
+	events.forEach(pair => {
+		html += formatEventAsHtml(pair.trail, pair.event);
+	});
+
+	return html;
 }
