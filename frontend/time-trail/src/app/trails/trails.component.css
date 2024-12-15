@@ -1,3 +1,7 @@
+.clickable-row:hover {
+	cursor: pointer;
+}
+
 /* Default table looks less blocky. Keeping this for reference.
 .trails {
 	margin: 0% 10%;
