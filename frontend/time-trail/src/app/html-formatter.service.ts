@@ -1,22 +1,13 @@
-import { Injectable } from '@angular/core';
 import { TrailEvent } from './trail-event';
 import { Trail } from './trail';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class HtmlFormatterService {
+export function formatTrailAsHtml(trail: Trail) {
+	return `<div>${trail.name}</div>`;
+}
 
-  constructor() { }
-
-  formatTrailContent(trail: Trail) {
-	return `<div>${ trail.name }</div>`;
-  }
-
-  formatEventContent(trail: Trail, trailEvent: TrailEvent): string {
+export function formatEventAsHtml(trail: Trail, trailEvent: TrailEvent): string {
 	return `` +
-		`<div><b>${ trail.name }</b></div>` +
+		`<div><b>${trail.name}</b></div>` +
 		`<br>` +
-		`<div>${ trailEvent.description }</div>`;
-  }
+		`<div>${trailEvent.description}</div>`;
 }

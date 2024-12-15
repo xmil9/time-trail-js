@@ -1,28 +1,31 @@
-import { inject, Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import { Trail } from './trail';
 import { generateColors, generateHslHues, Hsl } from './color';
+import { formatEventAsHtml, formatTrailAsHtml } from './html-formatter.service';
 import { TrailEvent } from './trail-event';
-import { HtmlFormatterService } from './html-formatter.service';
 
-@Injectable({
-	providedIn: 'root'
-})
-export class MappingService {
-	private formatter = inject(HtmlFormatterService);
-	private map?: L.Map;
-	
-	constructor() { }
+export class TrailsMap extends L.Map {
 
-	setMap(map: L.Map) {
-		this.map = map;
+	constructor() {
+		super('map', {
+			center: [39.8282, -98.5795],
+			zoom: 3
+		})
+		this.init();
+	}
+
+	private init() {
+		const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			minZoom: 3,
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		});
+
+		tiles.addTo(this);
 	}
 
 	addTrails(trails: Trail[]) {
-		if (!this.map)
-			throw new Error('Map not initialized.');
-
-		const trailColors = MappingService.generateTrailColors(trails.length);
+		const trailColors = TrailsMap.generateTrailColors(trails.length);
 
 		trails.forEach((trail, idx) => {
 			this.addTrail(trail, trailColors[idx], 10);
@@ -30,10 +33,7 @@ export class MappingService {
 	}
 
 	private addTrail(trail: Trail, color: Hsl, dotScale: number) {
-		if (!this.map)
-			throw new Error('Map not initialized.');
-
-		const eventColors = MappingService.generateEventColors(color, trail.events.length)
+		const eventColors = TrailsMap.generateEventColors(color, trail.events.length)
 
 		this.addPath(trail, color);
 
@@ -43,31 +43,24 @@ export class MappingService {
 	}
 
 	private addPath(trail: Trail, color: Hsl) {
-		if (!this.map)
-			throw new Error('Map not initialized.');
-
 		const path = L.polyline(
-			trail.events.map((event) => [event.lat, event.lng]),
-			{
+			trail.events.map((event) => [event.lat, event.lng]), {
 				stroke: true,
 				weight: 2,
 				color: color.toRgb().toString()
 			}
 		);
-		path.bindTooltip(this.formatter.formatTrailContent(trail), { sticky: true });
-		path.addTo(this.map);
+		path.bindTooltip(formatTrailAsHtml(trail), { sticky: true });
+		path.addTo(this);
 	}
 
 	private addEvent(trail: Trail, event: TrailEvent, color: Hsl, scale: number) {
-		if (!this.map)
-			throw new Error('Map not initialized.');
-
 		const marker = L.circle([event.lat, event.lng], {
 			color: color.toRgb().toString(),
-			radius: MappingService.eventSizeInMeters(event.durationInDays()) * scale
+			radius: TrailsMap.eventSizeInMeters(event.durationInDays()) * scale
 		});
-		marker.bindPopup(this.formatter.formatEventContent(trail, event));
-		marker.addTo(this.map);
+		marker.bindPopup(formatEventAsHtml(trail, event));
+		marker.addTo(this);
 	}
 
 	private static generateTrailColors(numTrails: number): Array<Hsl> {
@@ -83,4 +76,3 @@ export class MappingService {
 		return minSize + ((durationInDays >= 0) ? durationInDays : 0);
 	}
 }
-
